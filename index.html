@@ -35,10 +35,14 @@
 <div class="rail" id="railList"></div>
 
 <div class="controls">
-    <button class="btn-join" onclick="joinQueue()">TAP TO JOIN THE RAIL</button>
+    <div style="grid-column: span 2; display: flex; gap: 10px; margin-bottom: 10px;">
+        <input type="text" id="playerNameInput" placeholder="Enter Name" style="flex: 1; padding: 15px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 18px;">
+        <button class="btn-join" onclick="joinQueue()" style="margin:0; width: 120px;">JOIN</button>
+    </div>
     <button class="btn-win" onclick="reportWin('king')">King Won</button>
     <button class="btn-win" onclick="reportWin('challenger')" style="background:#8b5cf6">Challenger Won</button>
 </div>
+
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -61,11 +65,25 @@
 
     // FUNCTION: Join Queue
     window.joinQueue = async () => {
-        const name = prompt("Enter your name:");
-        if (name) {
-            await addDoc(queueRef, { playerName: name, joinedAt: Date.now() });
+    const nameInput = document.getElementById("playerNameInput");
+    const name = nameInput.value.trim();
+    
+    if (name) {
+        try {
+            await addDoc(queueRef, { 
+                playerName: name, 
+                joinedAt: Date.now() 
+            });
+            nameInput.value = ""; // Clears the box after joining
+            console.log("Player added successfully");
+        } catch (error) {
+            alert("Error: " + error.message);
+            console.error("Firebase Error:", error);
         }
-    };
+    } else {
+        alert("Please enter a name first!");
+    }
+};
 
     // FUNCTION: Report Win
     window.reportWin = async (winner) => {
